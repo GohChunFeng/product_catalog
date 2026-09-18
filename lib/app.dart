@@ -4,7 +4,7 @@ import 'package:flutter/services.dart';
 // add whatever you want to trigger before the app start, service initialization etc
 Future<void> runMyApp() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   // set orientation to portrait only
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   runApp(const MyApp());
@@ -21,6 +21,6 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return Container(color: CupertinoColors.systemBackground);
   }
 }
