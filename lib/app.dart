@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:product_catalog/app_base/constants/colors.dart';
@@ -43,7 +44,7 @@ class _MyAppState extends State<MyApp> {
             ),
           ),
         ],
-        child: TestScreen(),
+        child: MaterialApp(home: TestScreen()),
       ),
     );
   }

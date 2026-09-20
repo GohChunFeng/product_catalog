@@ -11,8 +11,9 @@ class AppColors {
   AppColors._();
 
   /// custom color fot theme
-  static const Color primary = Color(0xFF3CCABC);
-  static const Color accent = Color(0xFF2C3E50);
+  static const Color primary = Color(0xFF3525CD);
+  static const Color accent = Color(0xFF82F5C1);
+  static const Color appBg = Color(0xFFFAF8FF);
   static const Color white50 = Color(
     0x80FFFFFF,
   ); // white with alpha 50, seems like not included in AlignUI

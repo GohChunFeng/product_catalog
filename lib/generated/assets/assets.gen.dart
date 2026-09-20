@@ -17,16 +17,41 @@ import 'package:vector_graphics/vector_graphics.dart' as _vg;
 class $AssetsIconsGen {
   const $AssetsIconsGen();
 
-  /// File path: assets/icons/icon_cross-circle.svg
-  SvgGenImage get iconCrossCircle =>
-      const SvgGenImage('assets/icons/icon_cross-circle.svg');
+  /// File path: assets/icons/arrow-left-s-line.svg
+  SvgGenImage get arrowLeftSLine =>
+      const SvgGenImage('assets/icons/arrow-left-s-line.svg');
 
-  /// File path: assets/icons/icon_empty_box.svg
-  SvgGenImage get iconEmptyBox =>
-      const SvgGenImage('assets/icons/icon_empty_box.svg');
+  /// File path: assets/icons/close-line.svg
+  SvgGenImage get closeLine => const SvgGenImage('assets/icons/close-line.svg');
+
+  /// File path: assets/icons/cross-circle.svg
+  SvgGenImage get crossCircle =>
+      const SvgGenImage('assets/icons/cross-circle.svg');
+
+  /// File path: assets/icons/empty_box.svg
+  SvgGenImage get emptyBox => const SvgGenImage('assets/icons/empty_box.svg');
+
+  /// File path: assets/icons/information-fill.svg
+  SvgGenImage get informationFill =>
+      const SvgGenImage('assets/icons/information-fill.svg');
+
+  /// File path: assets/icons/search-line.svg
+  SvgGenImage get searchLine =>
+      const SvgGenImage('assets/icons/search-line.svg');
+
+  /// File path: assets/icons/store.svg
+  SvgGenImage get store => const SvgGenImage('assets/icons/store.svg');
 
   /// List of all assets
-  List<SvgGenImage> get values => [iconCrossCircle, iconEmptyBox];
+  List<SvgGenImage> get values => [
+    arrowLeftSLine,
+    closeLine,
+    crossCircle,
+    emptyBox,
+    informationFill,
+    searchLine,
+    store,
+  ];
 }
 
 class Assets {
