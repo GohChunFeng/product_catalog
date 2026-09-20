@@ -4,8 +4,6 @@ class NetworkConstant {
   static const int defaultTimeout = 20000;
 }
 
-// TODO: check again the api response code, seems like not compatible, need to rethink how to adapt it
-
 class ApiCode {
   ApiCode._();
 
