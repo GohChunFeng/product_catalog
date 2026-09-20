@@ -14,12 +14,20 @@ class _TestScreenState extends State<TestScreen> {
   @override
   void initState() {
     super.initState();
-    final productCatalogCubit = context.read<ProductCatalogCubit>();
-    productCatalogCubit.loadProductCatalog();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      _testApi();
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Container(color: AppColors.accent);
+  }
+
+  Future<void> _testApi() async {
+    final productCatalogCubit = context.read<ProductCatalogCubit>();
+    await productCatalogCubit.loadProductCatalog();
+    await productCatalogCubit.loadProductCatalogBySearch();
+    await productCatalogCubit.loadProductDetailById("1");
   }
 }

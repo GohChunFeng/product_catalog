@@ -1,6 +1,11 @@
 import '../constants/net_constants.dart';
 
-// TODO: need to change the code in here because dummy json api not sending the code,msg,count etc, directly data
+/// dummyjson repo: https://github.com/Ovi/DummyJSON/blob/master/src/controllers/product.js
+/// in this project only use three api: getAllProducts, getProductById and searchProducts
+/// for the listing (getAllProducts and searchProducts), the return response is paginateResource which seems like no error response
+/// for the detail (getProductById), it will return the product and have error response which is transport layer error 404 with a message in data body
+/// therefore when do serialization of data the response will not have things like code, msg, and count (these are extra info can be used if backend decide to handle unique error code etc which dummy json don't)
+/// in this project will not using this, a bit lazy to change and match the backend response, use other method instead
 
 class HttpResult<T> {
   int? code;
