@@ -13,6 +13,7 @@ import 'package:product_catalog/utils/debounce_helper.dart';
 import 'package:product_catalog/widgets/app_search_text_field.dart';
 import 'package:product_catalog/widgets/widget_size_ext.dart';
 
+import '../../../widgets/app_skeletonizer.dart';
 import '../../../widgets/app_style_bar.dart';
 
 class ProductListingPage extends StatefulWidget {
@@ -70,6 +71,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                   ),
                   itemBuilder: (context, index) {
                     return _wProductCard();
+                    // return _wProductCardPlaceholder();
                   },
                   itemCount: 12,
                 ),
@@ -219,7 +221,103 @@ class _ProductListingPageState extends State<ProductListingPage> {
                   ),
                 ),
                 Text(
-                  '\$${calculateOriginalPrice(9.99, 7.17)}',
+                  '\$${_calculateOriginalPrice(9.99, 7.17)}',
+                  style: AppTextStyles.labelSmall.copyWith(
+                    color: AppColors.neutral500,
+                    decoration: TextDecoration.lineThrough,
+                    height: 1.0,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ).withPadding(const EdgeInsetsGeometry.all(8)),
+      ),
+    );
+  }
+
+  Widget _wProductCardPlaceholder() {
+    return AppSkeletonizer(
+      child: Container(
+        decoration: BoxDecoration(
+          // color: AppColors.green50,
+          color: AppColors.neutral0,
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          spacing: 8,
+          children: [
+            AspectRatio(
+              aspectRatio: 1,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: AppColors.neutral200,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: AppColors.neutral200),
+                  // boxShadow: [AppColors.regularShadowXSmall],
+                ),
+              ),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'ESSENCE',
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                  style: AppTextStyles.subHeading2XSmall.copyWith(
+                    color: AppColors.neutral500,
+                  ),
+                ).flexible(),
+                Container(
+                  padding: EdgeInsets.symmetric(vertical: 2, horizontal: 8),
+                  decoration: BoxDecoration(
+                    color: AppColors.sky300,
+                    borderRadius: BorderRadius.circular(999),
+                  ),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    spacing: 0,
+                    children: [
+                      Icon(Icons.star, size: 12, color: AppColors.primary),
+                      Text(
+                        '4.94',
+                        style: AppTextStyles.subHeading2XSmall.copyWith(),
+                      ).withPadding(
+                        const EdgeInsetsGeometry.only(left: 4, right: 2),
+                      ),
+                      Text(
+                        '(120)',
+                        style: AppTextStyles.label2XSmall.copyWith(),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            Text(
+              'Essence Mascara Lash Princess Essence Mascara Lash Princess Essence Mascara Lash Princess',
+              overflow: TextOverflow.ellipsis,
+              maxLines: 2,
+              style: AppTextStyles.labelMedium.copyWith(
+                fontVariations: [FontVariation('wght', 700)],
+              ),
+            ),
+            SizedBox().expanded(),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              spacing: 2,
+              children: [
+                Text(
+                  '\$9.99',
+                  style: AppTextStyles.labelMedium.copyWith(
+                    fontVariations: [FontVariation('wght', 900)],
+                    height: 1.0,
+                  ),
+                ),
+                Text(
+                  '\$${_calculateOriginalPrice(9.99, 7.17)}',
                   style: AppTextStyles.labelSmall.copyWith(
                     color: AppColors.neutral500,
                     decoration: TextDecoration.lineThrough,
@@ -276,7 +374,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
     await productCatalogCubit.loadProductDetailById("1");
   }
 
-  String calculateOriginalPrice(double salePrice, double discountPercent) {
+  String _calculateOriginalPrice(double salePrice, double discountPercent) {
     // Divide sale price by the remaining percentage factor
     return (salePrice / (1 - (discountPercent / 100))).toStringAsFixed(2);
   }

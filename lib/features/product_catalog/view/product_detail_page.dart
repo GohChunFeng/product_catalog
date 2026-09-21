@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:product_catalog/app_base/constants/colors.dart';
 import 'package:product_catalog/app_base/constants/text_styles.dart';
+import 'package:product_catalog/widgets/app_skeletonizer.dart';
 
 import '../../../widgets/app_style_bar.dart';
 import '../../../widgets/widget_size_ext.dart';
@@ -28,159 +29,302 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
       body: Container(
         color: AppColors.appBg,
         child: SafeArea(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            spacing: 16,
-            children: [
-              // Container(
-              //   decoration: BoxDecoration(
-              //     // color: AppColors.neutral0,
-              //     borderRadius: BorderRadius.circular(16),
-              //     border: Border.all(color: AppColors.neutral200),
-              //     // boxShadow: [AppColors.regularShadowXSmall],
-              //   ),
-              //   child: Center(
-              //     child: CachedNetworkImage(
-              //       imageUrl: 'https://cdn.dummyjson.com/product-images/beauty/essence-mascara-lash-princess/thumbnail.webp',
-              //     ),
-              //   ),
-              // ),
-              _buildCarouselView(
-                images: [
-                  'https://cdn.dummyjson.com/product-images/beauty/essence-mascara-lash-princess/1.webp',
-                  'https://cdn.dummyjson.com/product-images/beauty/eyeshadow-palette-with-mirror/1.webp',
-                  'https://cdn.dummyjson.com/product-images/beauty/powder-canister/1.webp',
-                ],
+          // child: _wProductDetail().withPadding(EdgeInsetsGeometry.all(16)),
+          child: _wProductDetailPlaceholder().withPadding(
+            EdgeInsetsGeometry.all(16),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Column _wProductDetail() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      spacing: 16,
+      children: [
+        // Container(
+        //   decoration: BoxDecoration(
+        //     // color: AppColors.neutral0,
+        //     borderRadius: BorderRadius.circular(16),
+        //     border: Border.all(color: AppColors.neutral200),
+        //     // boxShadow: [AppColors.regularShadowXSmall],
+        //   ),
+        //   child: Center(
+        //     child: CachedNetworkImage(
+        //       imageUrl: 'https://cdn.dummyjson.com/product-images/beauty/essence-mascara-lash-princess/thumbnail.webp',
+        //     ),
+        //   ),
+        // ),
+        _buildCarouselView(
+          images: [
+            'https://cdn.dummyjson.com/product-images/beauty/essence-mascara-lash-princess/1.webp',
+            'https://cdn.dummyjson.com/product-images/beauty/eyeshadow-palette-with-mirror/1.webp',
+            'https://cdn.dummyjson.com/product-images/beauty/powder-canister/1.webp',
+          ],
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Container(
+              padding: EdgeInsets.symmetric(vertical: 2, horizontal: 8),
+              decoration: BoxDecoration(
+                color: AppColors.sky300,
+                borderRadius: BorderRadius.circular(999),
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Container(
-                    padding: EdgeInsets.symmetric(vertical: 2, horizontal: 8),
-                    decoration: BoxDecoration(
-                      color: AppColors.sky300,
-                      borderRadius: BorderRadius.circular(999),
-                    ),
-                    child: Text(
-                      'Beauty & Personal Care',
-                      style: AppTextStyles.labelXSmall.copyWith(
-                        color: AppColors.neutral500,
-                      ),
-                    ),
-                  ),
-                  Container(
-                    padding: EdgeInsets.symmetric(vertical: 2, horizontal: 8),
-                    decoration: BoxDecoration(
-                      color: AppColors.accent,
-                      borderRadius: BorderRadius.circular(999),
-                    ),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      spacing: 4,
-                      children: [
-                        Icon(
-                          Icons.circle,
-                          size: 6,
-                          color: AppColors.neutral500,
-                        ),
-                        Text(
-                          'In Stock (5)',
-                          style: AppTextStyles.labelXSmall.copyWith(
-                            color: AppColors.neutral500,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              Text(
-                'ESSENCE',
-                overflow: TextOverflow.ellipsis,
-                maxLines: 1,
-                style: AppTextStyles.labelMedium.copyWith(
-                  color: AppColors.primary,
+              child: Text(
+                'Beauty & Personal Care',
+                style: AppTextStyles.labelXSmall.copyWith(
+                  color: AppColors.neutral500,
                 ),
               ),
-              Text(
-                'Essence Mascara Lash Princess Essence Mascara Lash Princess Essence Mascara Lash Princess',
-                style: AppTextStyles.labelLarge.copyWith(
-                  fontVariations: [FontVariation('wght', 700)],
-                ),
+            ),
+            Container(
+              padding: EdgeInsets.symmetric(vertical: 2, horizontal: 8),
+              decoration: BoxDecoration(
+                color: AppColors.accent,
+                borderRadius: BorderRadius.circular(999),
               ),
-              Row(
+              child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
-                spacing: 12,
+                spacing: 4,
                 children: [
-                  Container(
-                    padding: EdgeInsets.symmetric(vertical: 2, horizontal: 8),
-                    decoration: BoxDecoration(
-                      color: AppColors.sky300,
-                      borderRadius: BorderRadius.circular(999),
-                    ),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      spacing: 4,
-                      children: [
-                        Icon(Icons.star, size: 12, color: AppColors.primary),
-                        Text(
-                          '4.94',
-                          style: AppTextStyles.subHeading2XSmall.copyWith(),
-                        ),
-                      ],
-                    ),
-                  ),
+                  Icon(Icons.circle, size: 6, color: AppColors.neutral500),
                   Text(
-                    '120 verified customer reviews',
-                    style: AppTextStyles.label2XSmall.copyWith(),
+                    'In Stock (5)',
+                    style: AppTextStyles.labelXSmall.copyWith(
+                      color: AppColors.neutral500,
+                    ),
                   ),
                 ],
+              ),
+            ),
+          ],
+        ),
+        Text(
+          'ESSENCE',
+          overflow: TextOverflow.ellipsis,
+          maxLines: 1,
+          style: AppTextStyles.labelMedium.copyWith(color: AppColors.primary),
+        ),
+        Text(
+          'Essence Mascara Lash Princess Essence Mascara Lash Princess Essence Mascara Lash Princess',
+          style: AppTextStyles.labelLarge.copyWith(
+            fontVariations: [FontVariation('wght', 700)],
+          ),
+        ),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          spacing: 12,
+          children: [
+            Container(
+              padding: EdgeInsets.symmetric(vertical: 2, horizontal: 8),
+              decoration: BoxDecoration(
+                color: AppColors.sky300,
+                borderRadius: BorderRadius.circular(999),
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                spacing: 4,
+                children: [
+                  Icon(Icons.star, size: 12, color: AppColors.primary),
+                  Text(
+                    '4.94',
+                    style: AppTextStyles.subHeading2XSmall.copyWith(),
+                  ),
+                ],
+              ),
+            ),
+            Text(
+              '120 verified customer reviews',
+              style: AppTextStyles.label2XSmall.copyWith(),
+            ),
+          ],
+        ),
+        Container(
+          width: double.infinity,
+          padding: EdgeInsetsGeometry.all(32),
+          decoration: BoxDecoration(
+            color: AppColors.sky300,
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            spacing: 8,
+            children: [
+              Text(
+                '\$9.99',
+                style: AppTextStyles.titleH2Title.copyWith(
+                  fontVariations: [FontVariation('wght', 700)],
+                  height: 1.0,
+                ),
+              ),
+              Text(
+                '\$${_calculateOriginalPrice(9.99, 7.17)}',
+                style: AppTextStyles.titleH5Title.copyWith(
+                  color: AppColors.neutral500,
+                  decoration: TextDecoration.lineThrough,
+                  height: 1.0,
+                ),
               ),
               Container(
-                width: double.infinity,
-                padding: EdgeInsetsGeometry.all(32),
+                padding: EdgeInsets.symmetric(vertical: 2, horizontal: 8),
+                decoration: BoxDecoration(
+                  color: AppColors.pink100,
+                  borderRadius: BorderRadius.circular(999),
+                ),
+                child: Text(
+                  '-15% OFF',
+                  style: AppTextStyles.subHeading2XSmall.copyWith(
+                    color: AppColors.red950,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _wProductDetailPlaceholder() {
+    return AppSkeletonizer(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        spacing: 16,
+        children: [
+          AspectRatio(
+            aspectRatio: 1,
+            child: Container(
+              decoration: BoxDecoration(
+                color: AppColors.neutral200,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: AppColors.neutral200),
+                // boxShadow: [AppColors.regularShadowXSmall],
+              ),
+            ),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Container(
+                padding: EdgeInsets.symmetric(vertical: 2, horizontal: 8),
                 decoration: BoxDecoration(
                   color: AppColors.sky300,
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(999),
+                ),
+                child: Text(
+                  'Beauty & Personal Care',
+                  style: AppTextStyles.labelXSmall.copyWith(
+                    color: AppColors.neutral500,
+                  ),
+                ),
+              ),
+              Container(
+                padding: EdgeInsets.symmetric(vertical: 2, horizontal: 8),
+                decoration: BoxDecoration(
+                  color: AppColors.accent,
+                  borderRadius: BorderRadius.circular(999),
                 ),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
-                  spacing: 8,
+                  spacing: 4,
                   children: [
+                    Icon(Icons.circle, size: 6, color: AppColors.neutral500),
                     Text(
-                      '\$9.99',
-                      style: AppTextStyles.titleH2Title.copyWith(
-                        fontVariations: [FontVariation('wght', 700)],
-                        height: 1.0,
-                      ),
-                    ),
-                    Text(
-                      '\$${calculateOriginalPrice(9.99, 7.17)}',
-                      style: AppTextStyles.titleH5Title.copyWith(
+                      'In Stock (5)',
+                      style: AppTextStyles.labelXSmall.copyWith(
                         color: AppColors.neutral500,
-                        decoration: TextDecoration.lineThrough,
-                        height: 1.0,
-                      ),
-                    ),
-                    Container(
-                      padding: EdgeInsets.symmetric(vertical: 2, horizontal: 8),
-                      decoration: BoxDecoration(
-                        color: AppColors.pink100,
-                        borderRadius: BorderRadius.circular(999),
-                      ),
-                      child: Text(
-                        '-15% OFF',
-                        style: AppTextStyles.subHeading2XSmall.copyWith(
-                          color: AppColors.red950,
-                        ),
                       ),
                     ),
                   ],
                 ),
               ),
             ],
-          ).withPadding(EdgeInsetsGeometry.all(16)),
-        ),
+          ),
+          Text(
+            'ESSENCE',
+            overflow: TextOverflow.ellipsis,
+            maxLines: 1,
+            style: AppTextStyles.labelMedium.copyWith(color: AppColors.primary),
+          ),
+          Text(
+            'Essence Mascara Lash Princess Essence Mascara Lash Princess Essence Mascara Lash Princess',
+            style: AppTextStyles.labelLarge.copyWith(
+              fontVariations: [FontVariation('wght', 700)],
+            ),
+          ),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            spacing: 12,
+            children: [
+              Container(
+                padding: EdgeInsets.symmetric(vertical: 2, horizontal: 8),
+                decoration: BoxDecoration(
+                  color: AppColors.sky300,
+                  borderRadius: BorderRadius.circular(999),
+                ),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  spacing: 4,
+                  children: [
+                    Icon(Icons.star, size: 12, color: AppColors.primary),
+                    Text(
+                      '4.94',
+                      style: AppTextStyles.subHeading2XSmall.copyWith(),
+                    ),
+                  ],
+                ),
+              ),
+              Text(
+                '120 verified customer reviews',
+                style: AppTextStyles.label2XSmall.copyWith(),
+              ),
+            ],
+          ),
+          Container(
+            width: double.infinity,
+            padding: EdgeInsetsGeometry.all(32),
+            decoration: BoxDecoration(
+              color: AppColors.sky300,
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              spacing: 8,
+              children: [
+                Text(
+                  '\$9.99',
+                  style: AppTextStyles.titleH2Title.copyWith(
+                    fontVariations: [FontVariation('wght', 700)],
+                    height: 1.0,
+                  ),
+                ),
+                Text(
+                  '\$${_calculateOriginalPrice(9.99, 7.17)}',
+                  style: AppTextStyles.titleH5Title.copyWith(
+                    color: AppColors.neutral500,
+                    decoration: TextDecoration.lineThrough,
+                    height: 1.0,
+                  ),
+                ),
+                Container(
+                  padding: EdgeInsets.symmetric(vertical: 2, horizontal: 8),
+                  decoration: BoxDecoration(
+                    color: AppColors.pink100,
+                    borderRadius: BorderRadius.circular(999),
+                  ),
+                  child: Text(
+                    '-15% OFF',
+                    style: AppTextStyles.subHeading2XSmall.copyWith(
+                      color: AppColors.red950,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -283,7 +427,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
     ).withPadding(const EdgeInsets.only(top: 24));
   }
 
-  String calculateOriginalPrice(double salePrice, double discountPercent) {
+  String _calculateOriginalPrice(double salePrice, double discountPercent) {
     // Divide sale price by the remaining percentage factor
     return (salePrice / (1 - (discountPercent / 100))).toStringAsFixed(2);
   }

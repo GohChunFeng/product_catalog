@@ -12,7 +12,7 @@ class AppSkeletonizer extends StatelessWidget {
       enabled: true,
       effect: const ShimmerEffect(
         baseColor: AppColors.neutral200,
-        highlightColor: AppColors.neutral200,
+        highlightColor: AppColors.neutral0,
         duration: Duration(seconds: 2),
       ),
       child: child,
