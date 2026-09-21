@@ -30,6 +30,7 @@ class ProductListingPage extends StatefulWidget {
 class _ProductListingPageState extends State<ProductListingPage> {
   final TextEditingController _searchController = TextEditingController();
   final DebounceHelper searchDebounceHelper = DebounceHelper();
+  final ScrollController _scrollController = ScrollController();
   final EasyRefreshController refreshController = EasyRefreshController(
     controlFinishLoad: true,
     controlFinishRefresh: true,
@@ -48,6 +49,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
   void dispose() {
     _searchController.dispose();
     searchDebounceHelper.dispose();
+    _scrollController.dispose();
     refreshController.dispose();
     super.dispose();
   }
@@ -107,6 +109,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                           productCatalogPageLoadData.state,
                           loading: () {
                             return GridView.builder(
+                              controller: _scrollController,
                               padding: const EdgeInsets.symmetric(
                                 horizontal: 16,
                               ),
