@@ -82,6 +82,8 @@ class _ProductListingPageState extends State<ProductListingPage> {
                     if (state.total ==
                         state.productCatalogPageLoadData.value?.length) {
                       refreshController.finishLoad(IndicatorResult.noMore);
+                    } else {
+                      refreshController.finishLoad();
                     }
                   },
                   child: BlocBuilder<ProductCatalogCubit, ProductCatalogState>(
@@ -255,21 +257,27 @@ class _ProductListingPageState extends State<ProductListingPage> {
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     spacing: 0,
-                    children: [
-                      Icon(Icons.star, size: 12, color: AppColors.primary),
-                      Text(
-                        product.rating.toString(),
-                        style: AppTextStyles.subHeading2XSmall.copyWith(),
-                      ).withPadding(
-                        const EdgeInsetsGeometry.only(left: 4, right: 2),
-                      ),
-                      Text(
-                        product.reviews?.length != null
-                            ? '(${product.reviews?.length.toString()})'
-                            : '0',
-                        style: AppTextStyles.label2XSmall.copyWith(),
-                      ),
-                    ],
+                    children: product.rating != null
+                        ? [
+                            Icon(
+                              Icons.star,
+                              size: 12,
+                              color: AppColors.primary,
+                            ),
+                            Text(
+                              product.rating.toString(),
+                              style: AppTextStyles.subHeading2XSmall.copyWith(),
+                            ).withPadding(
+                              const EdgeInsetsGeometry.only(left: 4, right: 2),
+                            ),
+                            Text(
+                              product.reviews?.length != null
+                                  ? '(${product.reviews?.length.toString()})'
+                                  : '(0 review)',
+                              style: AppTextStyles.label2XSmall.copyWith(),
+                            ),
+                          ]
+                        : [],
                   ),
                 ),
               ],
@@ -444,8 +452,6 @@ class _ProductListingPageState extends State<ProductListingPage> {
   Future<void> _getAll({bool refresh = false}) async {
     final productCatalogCubit = context.read<ProductCatalogCubit>();
     await productCatalogCubit.loadProductCatalog(refresh: refresh);
-    // await productCatalogCubit.loadProductCatalogBySearch();
-    // await productCatalogCubit.loadProductDetailById("1");
   }
 
   void _updateSearchKeyword(String keyword) {

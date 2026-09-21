@@ -70,8 +70,27 @@ class ProductCatalogCubit extends Cubit<ProductCatalogState> {
   }
 
   Future<void> loadProductDetailById(String id) async {
-    final response = await _productCatalogRepository.getProductDetail(id);
+    _globalCubit.showLoading();
+    try {
+      final response = await _productCatalogRepository.getProductDetail(id);
+      emit(
+        state.copyWith(
+          productDetailLoadData: state.productDetailLoadData.success(response),
+        ),
+      );
+    } catch (e) {
+      emit(
+        state.copyWith(
+          limit: 20,
+          skip: 0,
+          total: 0,
+          productCatalogPageLoadData: state.productCatalogPageLoadData.failure(
+            e,
+          ),
+        ),
+      );
+    }
 
-    print("product detail: $response");
+    _globalCubit.hideLoading();
   }
 }

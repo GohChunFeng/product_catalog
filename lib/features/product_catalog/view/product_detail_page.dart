@@ -2,12 +2,17 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:product_catalog/app_base/constants/colors.dart';
 import 'package:product_catalog/app_base/constants/text_styles.dart';
+import 'package:product_catalog/features/product_catalog/model/response/product_detail_model.dart';
+import 'package:product_catalog/utils/load_state.dart';
 import 'package:product_catalog/widgets/app_skeletonizer.dart';
 
 import '../../../widgets/app_style_bar.dart';
 import '../../../widgets/widget_size_ext.dart';
+import '../cubit/product_catalog_cubit.dart';
+import '../cubit/product_catalog_state.dart';
 
 class ProductDetailPage extends StatefulWidget {
   final String productId;
@@ -20,6 +25,13 @@ class ProductDetailPage extends StatefulWidget {
 class _ProductDetailPageState extends State<ProductDetailPage> {
   int _current = 0;
   final CarouselSliderController _controller = CarouselSliderController();
+
+  @override
+  void initState() {
+    super.initState();
+    _getDetail();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -29,40 +41,34 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
       body: Container(
         color: AppColors.appBg,
         child: SafeArea(
-          // child: _wProductDetail().withPadding(EdgeInsetsGeometry.all(16)),
-          child: _wProductDetailPlaceholder().withPadding(
-            EdgeInsetsGeometry.all(16),
+          child: BlocBuilder<ProductCatalogCubit, ProductCatalogState>(
+            builder: (context, state) {
+              final productDetailLoadData = state.productDetailLoadData;
+              return LoadStateUtil.switchLoadState(
+                productDetailLoadData.state,
+                loading: () {
+                  return _wProductDetailPlaceholder().withPadding(
+                    EdgeInsetsGeometry.all(16),
+                  );
+                },
+                success: () {
+                  return _wProductDetail(productDetailLoadData.value!)
+                      .withPadding(EdgeInsetsGeometry.all(16));
+                },
+              );
+            },
           ),
         ),
       ),
     );
   }
 
-  Column _wProductDetail() {
+  Column _wProductDetail(ProductDetailModel product) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       spacing: 16,
       children: [
-        // Container(
-        //   decoration: BoxDecoration(
-        //     // color: AppColors.neutral0,
-        //     borderRadius: BorderRadius.circular(16),
-        //     border: Border.all(color: AppColors.neutral200),
-        //     // boxShadow: [AppColors.regularShadowXSmall],
-        //   ),
-        //   child: Center(
-        //     child: CachedNetworkImage(
-        //       imageUrl: 'https://cdn.dummyjson.com/product-images/beauty/essence-mascara-lash-princess/thumbnail.webp',
-        //     ),
-        //   ),
-        // ),
-        _buildCarouselView(
-          images: [
-            'https://cdn.dummyjson.com/product-images/beauty/essence-mascara-lash-princess/1.webp',
-            'https://cdn.dummyjson.com/product-images/beauty/eyeshadow-palette-with-mirror/1.webp',
-            'https://cdn.dummyjson.com/product-images/beauty/powder-canister/1.webp',
-          ],
-        ),
+        _buildCarouselView(images: product.images ?? []),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -73,7 +79,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                 borderRadius: BorderRadius.circular(999),
               ),
               child: Text(
-                'Beauty & Personal Care',
+                product.category ?? 'No category',
                 style: AppTextStyles.labelXSmall.copyWith(
                   color: AppColors.neutral500,
                 ),
@@ -91,7 +97,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                 children: [
                   Icon(Icons.circle, size: 6, color: AppColors.neutral500),
                   Text(
-                    'In Stock (5)',
+                    '${product.availabilityStatus} (${product.stock})',
                     style: AppTextStyles.labelXSmall.copyWith(
                       color: AppColors.neutral500,
                     ),
@@ -102,13 +108,13 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
           ],
         ),
         Text(
-          'ESSENCE',
+          product.brand ?? 'No brand',
           overflow: TextOverflow.ellipsis,
           maxLines: 1,
           style: AppTextStyles.labelMedium.copyWith(color: AppColors.primary),
         ),
         Text(
-          'Essence Mascara Lash Princess Essence Mascara Lash Princess Essence Mascara Lash Princess',
+          product.description ?? 'No description',
           style: AppTextStyles.labelLarge.copyWith(
             fontVariations: [FontVariation('wght', 700)],
           ),
@@ -129,14 +135,14 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                 children: [
                   Icon(Icons.star, size: 12, color: AppColors.primary),
                   Text(
-                    '4.94',
+                    product.rating.toString(),
                     style: AppTextStyles.subHeading2XSmall.copyWith(),
                   ),
                 ],
               ),
             ),
             Text(
-              '120 verified customer reviews',
+              '${product.reviews?.length != null ? '${product.reviews?.length.toString()}' : '0'} verified customer reviews',
               style: AppTextStyles.label2XSmall.copyWith(),
             ),
           ],
@@ -148,19 +154,20 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
             color: AppColors.sky300,
             borderRadius: BorderRadius.circular(16),
           ),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            spacing: 8,
+          child: Wrap(
+            crossAxisAlignment: WrapCrossAlignment.center,
+            spacing: 16,
+            runSpacing: 16,
             children: [
               Text(
-                '\$9.99',
+                '\$${product.price}',
                 style: AppTextStyles.titleH2Title.copyWith(
                   fontVariations: [FontVariation('wght', 700)],
                   height: 1.0,
                 ),
               ),
               Text(
-                '\$${_calculateOriginalPrice(9.99, 7.17)}',
+                '\$${_calculateOriginalPrice(product.price ?? 0, product.discountPercentage ?? 0)}',
                 style: AppTextStyles.titleH5Title.copyWith(
                   color: AppColors.neutral500,
                   decoration: TextDecoration.lineThrough,
@@ -174,7 +181,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                   borderRadius: BorderRadius.circular(999),
                 ),
                 child: Text(
-                  '-15% OFF',
+                  '-${product.discountPercentage.toString()}% OFF',
                   style: AppTextStyles.subHeading2XSmall.copyWith(
                     color: AppColors.red950,
                   ),
@@ -425,6 +432,11 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
         ],
       ),
     ).withPadding(const EdgeInsets.only(top: 24));
+  }
+
+  Future<void> _getDetail() async {
+    final productCatalogCubit = context.read<ProductCatalogCubit>();
+    await productCatalogCubit.loadProductDetailById(widget.productId);
   }
 
   String _calculateOriginalPrice(double salePrice, double discountPercent) {
