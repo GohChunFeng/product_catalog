@@ -35,6 +35,10 @@ class $AssetsIconsGen {
   SvgGenImage get informationFill =>
       const SvgGenImage('assets/icons/information-fill.svg');
 
+  /// File path: assets/icons/loader-2-line.svg
+  SvgGenImage get loader2Line =>
+      const SvgGenImage('assets/icons/loader-2-line.svg');
+
   /// File path: assets/icons/search-line.svg
   SvgGenImage get searchLine =>
       const SvgGenImage('assets/icons/search-line.svg');
@@ -49,6 +53,7 @@ class $AssetsIconsGen {
     crossCircle,
     emptyBox,
     informationFill,
+    loader2Line,
     searchLine,
     store,
   ];

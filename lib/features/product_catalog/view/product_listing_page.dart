@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -7,9 +8,12 @@ import 'package:product_catalog/app_base/constants/colors.dart';
 import 'package:product_catalog/app_base/constants/text_styles.dart';
 import 'package:product_catalog/app_base/router/app_router.dart';
 import 'package:product_catalog/features/product_catalog/cubit/product_catalog_cubit.dart';
+import 'package:product_catalog/features/product_catalog/cubit/product_catalog_state.dart';
+import 'package:product_catalog/features/product_catalog/model/response/product_catalog_model.dart';
 import 'package:product_catalog/features/product_catalog/view/product_detail_page.dart';
 import 'package:product_catalog/generated/assets/assets.gen.dart';
 import 'package:product_catalog/utils/debounce_helper.dart';
+import 'package:product_catalog/utils/load_state.dart';
 import 'package:product_catalog/widgets/app_search_text_field.dart';
 import 'package:product_catalog/widgets/widget_size_ext.dart';
 
@@ -26,11 +30,17 @@ class ProductListingPage extends StatefulWidget {
 class _ProductListingPageState extends State<ProductListingPage> {
   final TextEditingController _searchController = TextEditingController();
   final DebounceHelper searchDebounceHelper = DebounceHelper();
+  final EasyRefreshController refreshController = EasyRefreshController(
+    controlFinishLoad: true,
+    controlFinishRefresh: true,
+  );
+  final bool _needRefresh = true;
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      // _testApi();
+      _getAll(refresh: true);
     });
   }
 
@@ -38,6 +48,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
   void dispose() {
     _searchController.dispose();
     searchDebounceHelper.dispose();
+    refreshController.dispose();
     super.dispose();
   }
 
@@ -54,26 +65,87 @@ class _ProductListingPageState extends State<ProductListingPage> {
             children: [
               AppSearchTextField(
                 searchTextController: _searchController,
+                onClear: () {
+                  FocusManager.instance.primaryFocus?.unfocus();
+                  _updateSearchKeyword("");
+                },
                 onChange: (String keyword) {
                   searchDebounceHelper.run(() {
-                    print("start query");
+                    FocusManager.instance.primaryFocus?.unfocus();
+                    _updateSearchKeyword(keyword);
                   });
                 },
               ).withPadding(const EdgeInsetsGeometry.all(16)),
               Expanded(
-                child: GridView.builder(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                    crossAxisSpacing: 8,
-                    mainAxisSpacing: 8,
-                    maxCrossAxisExtent: 300,
-                    childAspectRatio: 0.55,
-                  ),
-                  itemBuilder: (context, index) {
-                    return _wProductCard();
-                    // return _wProductCardPlaceholder();
+                child: BlocListener<ProductCatalogCubit, ProductCatalogState>(
+                  listener: (context, state) {
+                    if (state.total ==
+                        state.productCatalogPageLoadData.value?.length) {
+                      refreshController.finishLoad(IndicatorResult.noMore);
+                    }
                   },
-                  itemCount: 12,
+                  child: BlocBuilder<ProductCatalogCubit, ProductCatalogState>(
+                    builder: (context, state) {
+                      final productCatalogPageLoadData =
+                          state.productCatalogPageLoadData;
+                      return EasyRefresh(
+                        header: const CupertinoHeader(),
+                        footer: CupertinoFooter(emptyWidget: SizedBox.shrink()),
+                        controller: refreshController,
+                        onRefresh: () async {
+                          await _getAll(refresh: true);
+                          setState(() {});
+                          refreshController.finishRefresh();
+                          refreshController.resetFooter();
+                        },
+                        onLoad: () async {
+                          await _getAll();
+                        },
+                        child: LoadStateUtil.switchPageLoadState(
+                          productCatalogPageLoadData.state,
+                          loading: () {
+                            return GridView.builder(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                              ),
+                              gridDelegate:
+                                  SliverGridDelegateWithMaxCrossAxisExtent(
+                                    crossAxisSpacing: 8,
+                                    mainAxisSpacing: 8,
+                                    maxCrossAxisExtent: 300,
+                                    childAspectRatio: 0.55,
+                                  ),
+                              itemBuilder: (context, index) {
+                                return _wProductCardPlaceholder();
+                              },
+                              itemCount: 20,
+                            );
+                          },
+                          success: () {
+                            final dataList =
+                                productCatalogPageLoadData.value ?? [];
+                            return GridView.builder(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                              ),
+                              gridDelegate:
+                                  SliverGridDelegateWithMaxCrossAxisExtent(
+                                    crossAxisSpacing: 8,
+                                    mainAxisSpacing: 8,
+                                    maxCrossAxisExtent: 300,
+                                    childAspectRatio: 0.55,
+                                  ),
+                              itemBuilder: (context, index) {
+                                return _wProductCard(dataList[index]);
+                                // return _wProductCardPlaceholder();
+                              },
+                              itemCount: dataList.length,
+                            );
+                          },
+                        ),
+                      );
+                    },
+                  ),
                 ),
               ),
             ],
@@ -83,10 +155,10 @@ class _ProductListingPageState extends State<ProductListingPage> {
     );
   }
 
-  GestureDetector _wProductCard() {
+  GestureDetector _wProductCard(ProductCatalogProducts product) {
     return GestureDetector(
       onTap: () {
-        ProductDetailRoute(productId: '1').push(context);
+        ProductDetailRoute(productId: product.id.toString()).push(context);
       },
       child: Container(
         decoration: BoxDecoration(
@@ -112,7 +184,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                 children: [
                   Center(
                     child: CachedNetworkImage(
-                      imageUrl: 'https://cdn.dummyjson.com/product-images/beauty/essence-mascara-lash-princess/thumbnail.webp',
+                      imageUrl: product.thumbnail ?? '',
                     ),
                   ),
                   Positioned(
@@ -125,7 +197,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                         borderRadius: BorderRadius.circular(999),
                       ),
                       child: Text(
-                        '-15%',
+                        '-${product.discountPercentage.toString()}%',
                         style: AppTextStyles.subHeading2XSmall.copyWith(
                           color: AppColors.neutral500,
                         ),
@@ -151,7 +223,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                             color: AppColors.neutral500,
                           ),
                           Text(
-                            'In Stock (5)',
+                            '${product.availabilityStatus} (${product.stock})',
                             style: AppTextStyles.subHeading2XSmall.copyWith(
                               color: AppColors.neutral500,
                             ),
@@ -167,7 +239,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'ESSENCE',
+                  product.brand ?? 'No branding',
                   overflow: TextOverflow.ellipsis,
                   maxLines: 1,
                   style: AppTextStyles.subHeading2XSmall.copyWith(
@@ -186,13 +258,15 @@ class _ProductListingPageState extends State<ProductListingPage> {
                     children: [
                       Icon(Icons.star, size: 12, color: AppColors.primary),
                       Text(
-                        '4.94',
+                        product.rating.toString(),
                         style: AppTextStyles.subHeading2XSmall.copyWith(),
                       ).withPadding(
                         const EdgeInsetsGeometry.only(left: 4, right: 2),
                       ),
                       Text(
-                        '(120)',
+                        product.reviews?.length != null
+                            ? '(${product.reviews?.length.toString()})'
+                            : '0',
                         style: AppTextStyles.label2XSmall.copyWith(),
                       ),
                     ],
@@ -201,7 +275,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
               ],
             ),
             Text(
-              'Essence Mascara Lash Princess Essence Mascara Lash Princess Essence Mascara Lash Princess',
+              product.title ?? 'No title',
               overflow: TextOverflow.ellipsis,
               maxLines: 2,
               style: AppTextStyles.labelMedium.copyWith(
@@ -214,14 +288,14 @@ class _ProductListingPageState extends State<ProductListingPage> {
               spacing: 2,
               children: [
                 Text(
-                  '\$9.99',
+                  '\$${product.price}',
                   style: AppTextStyles.labelMedium.copyWith(
                     fontVariations: [FontVariation('wght', 900)],
                     height: 1.0,
                   ),
                 ),
                 Text(
-                  '\$${_calculateOriginalPrice(9.99, 7.17)}',
+                  '\$${_calculateOriginalPrice(product.price ?? 0, product.discountPercentage ?? 0)}',
                   style: AppTextStyles.labelSmall.copyWith(
                     color: AppColors.neutral500,
                     decoration: TextDecoration.lineThrough,
@@ -367,11 +441,16 @@ class _ProductListingPageState extends State<ProductListingPage> {
     );
   }
 
-  Future<void> _testApi() async {
+  Future<void> _getAll({bool refresh = false}) async {
     final productCatalogCubit = context.read<ProductCatalogCubit>();
-    await productCatalogCubit.loadProductCatalog();
-    await productCatalogCubit.loadProductCatalogBySearch();
-    await productCatalogCubit.loadProductDetailById("1");
+    await productCatalogCubit.loadProductCatalog(refresh: refresh);
+    // await productCatalogCubit.loadProductCatalogBySearch();
+    // await productCatalogCubit.loadProductDetailById("1");
+  }
+
+  void _updateSearchKeyword(String keyword) {
+    final productCatalogCubit = context.read<ProductCatalogCubit>();
+    productCatalogCubit.updateSearchKeyword(keyword);
   }
 
   String _calculateOriginalPrice(double salePrice, double discountPercent) {

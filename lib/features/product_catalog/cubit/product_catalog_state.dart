@@ -9,8 +9,16 @@ part 'product_catalog_state.freezed.dart';
 @freezed
 sealed class ProductCatalogState with _$ProductCatalogState {
   const factory ProductCatalogState({
+    @Default(20) int? limit,
+
+    @Default(0) int? skip,
+
+    @Default(0) int? total,
+
     @Default(PageLoadData.init())
-    PageLoadData<ProductCatalogModel> productCatalogPageLoadData,
+    PageLoadData<ProductCatalogProducts> productCatalogPageLoadData,
+
+    @Default('') String keyword,
 
     @Default(LoadData.init())
     LoadData<ProductDetailModel> productDetailLoadData,

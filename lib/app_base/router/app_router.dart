@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:product_catalog/features/global/cubit/global_cubit.dart';
 import 'package:product_catalog/features/product_catalog/view/product_listing_page.dart';
 
 import '../../features/product_catalog/cubit/product_catalog_cubit.dart';
@@ -26,6 +27,7 @@ class ProductDetailRoute extends GoRouteData with $ProductDetailRoute {
   @override
   Widget build(BuildContext context, GoRouterState state) => BlocProvider(
     create: (context) => ProductCatalogCubit(
+      globalCubit: context.read<GlobalCubit>(),
       productCatalogRepository: context.read<ProductCatalogRepository>(),
     ),
     child: ProductDetailPage(productId: productId),
