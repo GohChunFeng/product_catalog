@@ -58,23 +58,19 @@ class _TestScreenState extends State<TestScreen> {
                 },
               ).withPadding(const EdgeInsetsGeometry.all(16)),
               Expanded(
-                child:
-                    SingleChildScrollView(
-                      child: Column(
-                        children: [
-                          _wProductCard(),
-                          _wProductCard(),
-                          _wProductCard(),
-                          _wProductCard(),
-                          _wProductCard(),
-                          _wProductCard(),
-                          _wProductCard(),
-                          _wProductCard(),
-                        ],
-                      ),
-                    ).withPadding(
-                      const EdgeInsetsGeometry.symmetric(horizontal: 16),
-                    ),
+                child: GridView.builder(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                    crossAxisSpacing: 8,
+                    mainAxisSpacing: 8,
+                    maxCrossAxisExtent: 300,
+                    childAspectRatio: 0.55,
+                  ),
+                  itemBuilder: (context, index) {
+                    return _wProductCard();
+                  },
+                  itemCount: 12,
+                ),
               ),
             ],
           ),
@@ -92,22 +88,136 @@ class _TestScreenState extends State<TestScreen> {
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        spacing: 8,
         children: [
           // CachedNetworkImage(
           //   imageUrl: 'https://cdn.dummyjson.com/product-images/beauty/essence-mascara-lash-princess/1.webp',
           // ),
-          Center(
-            child: CachedNetworkImage(
-              height: 150,
-              width: 150,
-              imageUrl: 'https://cdn.dummyjson.com/product-images/beauty/essence-mascara-lash-princess/thumbnail.webp',
+          Container(
+            decoration: BoxDecoration(
+              // color: AppColors.neutral0,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: AppColors.neutral200),
+              // boxShadow: [AppColors.regularShadowXSmall],
+            ),
+            child: Stack(
+              children: [
+                Center(
+                  child: CachedNetworkImage(
+                    imageUrl: 'https://cdn.dummyjson.com/product-images/beauty/essence-mascara-lash-princess/thumbnail.webp',
+                  ),
+                ),
+                Positioned(
+                  top: 8,
+                  left: 8,
+                  child: Container(
+                    padding: EdgeInsets.symmetric(vertical: 2, horizontal: 8),
+                    decoration: BoxDecoration(
+                      color: AppColors.pink100,
+                      borderRadius: BorderRadius.circular(999),
+                    ),
+                    child: Text(
+                      '-15%',
+                      style: AppTextStyles.subHeading2XSmall.copyWith(
+                        color: AppColors.neutral500,
+                      ),
+                    ),
+                  ),
+                ),
+                Positioned(
+                  bottom: 8,
+                  left: 8,
+                  child: Container(
+                    padding: EdgeInsets.symmetric(vertical: 2, horizontal: 8),
+                    decoration: BoxDecoration(
+                      color: AppColors.accent,
+                      borderRadius: BorderRadius.circular(999),
+                    ),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      spacing: 4,
+                      children: [
+                        Icon(
+                          Icons.circle,
+                          size: 6,
+                          color: AppColors.neutral500,
+                        ),
+                        Text(
+                          'In Stock (5)',
+                          style: AppTextStyles.subHeading2XSmall.copyWith(
+                            color: AppColors.neutral500,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
-
-          Text('ESSENCE', style: AppTextStyles.labelSmall),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'ESSENCE',
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
+                style: AppTextStyles.subHeading2XSmall.copyWith(
+                  color: AppColors.neutral500,
+                ),
+              ).flexible(),
+              Container(
+                padding: EdgeInsets.symmetric(vertical: 2, horizontal: 8),
+                decoration: BoxDecoration(
+                  color: AppColors.sky300,
+                  borderRadius: BorderRadius.circular(999),
+                ),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  spacing: 0,
+                  children: [
+                    Icon(Icons.star, size: 12, color: AppColors.primary),
+                    Text(
+                      '4.94',
+                      style: AppTextStyles.subHeading2XSmall.copyWith(),
+                    ).withPadding(
+                      const EdgeInsetsGeometry.only(left: 4, right: 2),
+                    ),
+                    Text('(120)', style: AppTextStyles.label2XSmall.copyWith()),
+                  ],
+                ),
+              ),
+            ],
+          ),
           Text(
-            'Essence Mascara Lash Princess',
-            style: AppTextStyles.labelMedium,
+            'Essence Mascara Lash Princess Essence Mascara Lash Princess Essence Mascara Lash Princess',
+            overflow: TextOverflow.ellipsis,
+            maxLines: 2,
+            style: AppTextStyles.labelMedium.copyWith(
+              fontVariations: [FontVariation('wght', 700)],
+            ),
+          ),
+          SizedBox().expanded(),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            spacing: 2,
+            children: [
+              Text(
+                '\$9.99',
+                style: AppTextStyles.labelMedium.copyWith(
+                  fontVariations: [FontVariation('wght', 900)],
+                  height: 1.0,
+                ),
+              ),
+              Text(
+                '\$${calculateOriginalPrice(9.99, 7.17)}',
+                style: AppTextStyles.labelSmall.copyWith(
+                  color: AppColors.neutral500,
+                  decoration: TextDecoration.lineThrough,
+                  height: 1.0,
+                ),
+              ),
+            ],
           ),
         ],
       ).withPadding(const EdgeInsetsGeometry.all(8)),
@@ -154,5 +264,10 @@ class _TestScreenState extends State<TestScreen> {
     await productCatalogCubit.loadProductCatalog();
     await productCatalogCubit.loadProductCatalogBySearch();
     await productCatalogCubit.loadProductDetailById("1");
+  }
+
+  String calculateOriginalPrice(double salePrice, double discountPercent) {
+    // Divide sale price by the remaining percentage factor
+    return (salePrice / (1 - (discountPercent / 100))).toStringAsFixed(2);
   }
 }
