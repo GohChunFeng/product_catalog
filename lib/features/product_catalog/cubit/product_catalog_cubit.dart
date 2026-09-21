@@ -69,15 +69,6 @@ class ProductCatalogCubit extends Cubit<ProductCatalogState> {
     // print("list catalog: $response");
   }
 
-  Future<void> loadProductCatalogBySearch({bool refresh = true}) async {
-    final response = await _productCatalogRepository.getProductListingBySearch(
-      keyword: 'phone',
-      limit: 20,
-      skip: 0,
-    );
-    print("list catalog by search: $response");
-  }
-
   Future<void> loadProductDetailById(String id) async {
     final response = await _productCatalogRepository.getProductDetail(id);
 
